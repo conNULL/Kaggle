@@ -14,8 +14,9 @@ def get_batch(x, y, size):
     return batch_x, batch_y.reshape(size, 1)
     
 
-data = pd.read_csv('train.csv')
-tdata = pd.read_csv('test.csv')
+DIRECTORY = ('data/Titanic/')
+data = pd.read_csv(DIRECTORY + 'train.csv')
+tdata = pd.read_csv(DIRECTORY + 'test.csv')
 
 age = data['Age'].mean()
 data['Age'] =data['Age'].fillna(age)
@@ -107,7 +108,7 @@ print('Validation Accuracy:', accuracy.eval(session = sess, feed_dict={x: batch_
 
 test_answers = [int(k) if not math.isnan(k) else 0 for k in prediction.eval(session=sess, feed_dict = {x: tdmat})]
 
-f = open('submission.txt', 'w')
+f = open(DIRECTORY + 'submission.txt', 'w')
 f.write('PassengerId,Survived\n')
 for i in range(len(data), len(data) + len(tdata)):
     f.write(str(i+1) +','+ str(test_answers[i-len(data)]) +'\n')
