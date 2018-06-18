@@ -4,14 +4,6 @@ import tensorflow as tf
 import random
 import math
 from lib.data_utils import Dataset
-
-def get_batch(x, y, size):
-    
-    ind = random.sample(range(len(x)), size)
-    batch_x = np.asarray([x[k] for k in ind])
-    batch_y = np.asarray([y[k] for k in ind])
-    
-    return batch_x, batch_y.reshape(size, 1)
     
 
 DIRECTORY = ('data/Titanic/')
@@ -64,13 +56,13 @@ switched = False
 correct_prediction = tf.equal([tf.round(tf.sigmoid(y))], [y_])
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 for i in range(30000):
-    batch_xs, batch_ys = get_batch(dmat, answers,batch_size)
+    batch_xs, batch_ys = Dataset.get_batch(dmat, answers,batch_size)
     sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
     
     if i % 300 == 0:
         print('iteration:', i)
         print('Train:', accuracy.eval(session = sess, feed_dict={x: batch_xs, y_: batch_ys}))
-        batch_xs, batch_ys = get_batch(v_dmat,v_answers,VALIDATION_SIZE)
+        batch_xs, batch_ys = Dataset.get_batch(v_dmat,v_answers,VALIDATION_SIZE)
         v_acc = accuracy.eval(session = sess, feed_dict={x: batch_xs, y_: batch_ys})
         print('Validation:', v_acc)
         if not switched and v_acc > 0.8:
@@ -79,7 +71,7 @@ for i in range(30000):
             batch_size = end_batch_size
             switched = True
 
-batch_xs, batch_ys = get_batch(v_dmat, v_answers, VALIDATION_SIZE)
+batch_xs, batch_ys = Dataset.get_batch(v_dmat, v_answers, VALIDATION_SIZE)
 print('Validation Accuracy:', accuracy.eval(session = sess, feed_dict={x: batch_xs, y_: batch_ys}))
 
 test_answers = [int(k) if not math.isnan(k) else 0 for k in prediction.eval(session=sess, feed_dict = {x: tdmat})]

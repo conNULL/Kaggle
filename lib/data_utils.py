@@ -1,9 +1,10 @@
 import numpy as np
 import pandas as pd
+import random
 
 class Dataset():
     
-    def __init__(self, dataFrame, binaryColumns, continuousColumns, discreteColumns, nullValues):
+    def __init__(self, dataFrame, binaryColumns=set([]), continuousColumns=set([]), discreteColumns=set([]), nullValues=set([])):
         
         self.data = []
         self.columnCount = 0
@@ -49,3 +50,10 @@ class Dataset():
             
         return oneHotMap, len(values)
         
+    def get_batch(x, y, size):
+        
+        ind = random.sample(range(len(x)), size)
+        batch_x = np.asarray([x[k] for k in ind])
+        batch_y = np.asarray([y[k] for k in ind])
+        
+        return batch_x, batch_y.reshape(size, 1)
