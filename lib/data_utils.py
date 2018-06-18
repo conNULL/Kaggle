@@ -50,10 +50,10 @@ class Dataset():
             
         return oneHotMap, len(values)
         
-    def get_batch(x, y, size):
+    def get_batch(x, y, size, y_size=1):
         
         ind = random.sample(range(len(x)), size)
         batch_x = np.asarray([x[k] for k in ind])
         batch_y = np.asarray([y[k] for k in ind])
         
-        return batch_x, batch_y.reshape(size, 1)
+        return batch_x, batch_y.reshape(size, y_size)
