@@ -4,10 +4,11 @@ import random
 
 class Dataset():
     
-    def __init__(self, dataFrame, binaryColumns=set([]), continuousColumns=set([]), discreteColumns=set([]), nullValues=set([])):
+    def __init__(self, dataFrame, binaryColumns=set([]), continuousColumns=set([]), discreteColumns=set([]), nullValues=set([]), oneHotMaps={}):
         
         self.data = []
         self.columnCount = 0
+        self.oneHotMaps = oneHotMaps
         
         for col in binaryColumns:
             self.addBinaryColumn(dataFrame, col)
@@ -27,7 +28,7 @@ class Dataset():
         
     def addDiscreteColumn(self, dataFrame, colName, nullValues):
         
-        oneHotMap, columnCount = Dataset.getOneHotMap(dataFrame[colName], nullValues)
+        oneHotMap, columnCount = self.getOneHotMap(dataFrame[colName],colName, nullValues)
         dataFrame[colName] = dataFrame[colName].map(lambda x: oneHotMap[x])
         
         for j in range(len(dataFrame[colName][0])):
@@ -35,8 +36,10 @@ class Dataset():
             
         self.columnCount += columnCount
             
-    def getOneHotMap(dataColumn, nullValues):
+    def getOneHotMap(self, dataColumn, colName, nullValues):
         
+        if colName in self.oneHotMaps:
+            return self.oneHotMaps[dataColumn], len(self.oneHotMaps[colName][dataColumn.values[0]])
         values = list(set(dataColumn.values) - nullValues)
         oneHotMap = {}
         base = [0]*(len(values))
@@ -48,6 +51,7 @@ class Dataset():
             oneHot[i] = 1
             oneHotMap[values[i]] = oneHot
             
+        self.oneHotMaps[colName] = oneHotMap
         return oneHotMap, len(values)
         
     def get_batch(x, y, size, y_size=1):
